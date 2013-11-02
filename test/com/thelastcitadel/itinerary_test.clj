@@ -22,8 +22,8 @@
                    (.close x))
           :flags #{:once}})
 
-(deftest t-foo
-  (is true))
+(deftest ^:regression t-foo
+  (is false))
 (depend t-foo :foo foo :bar bar)
 
 (deftest t-bar
