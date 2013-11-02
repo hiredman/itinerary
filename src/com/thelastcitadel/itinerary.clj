@@ -6,11 +6,15 @@
 
 (def deps sort/deps)
 
-(defn depend-fn [v m]
+(defn depend-fn
+  "add dependency information to var"
+  [v m]
   (alter-meta! v assoc :itinerary/deps m)
   v)
 
-(defmacro depend [name & kvs]
+(defmacro depend
+  "add dependency information to var"
+  [name & kvs]
   (let [ns (namespace name)
         name (symbol (clojure.core/name name))
         v (intern (if ns
@@ -21,13 +25,16 @@
                      [k (resolve ns v)]))]
     `(depend-fn ~v ~m)))
 
-(defn all-tests []
+(defn all-tests
+  "return all vars with :test metadata"
+  []
   (for [namespace (all-ns)
         [n v] (ns-publics namespace)
         :when (:test (meta v))]
     v))
 
 (defn dep-graph
+  "return a dependency graph of tests and fixtures"
   ([]
      (dep-graph (all-tests)))
   ([tests]
@@ -43,8 +50,12 @@
                         [:after fixture v nk] #{}})))
        :all-tests #{})))
 
-(defn plumbing [env itinerary]
+(defn plumbing
+  "given an empty env {} and a list of things to do, do them"
+  [env itinerary]
   (reduce run/x-run-tests env itinerary))
 
-(defn env []
+(defn env
+  "return the test environment"
+  []
   run/*env*)

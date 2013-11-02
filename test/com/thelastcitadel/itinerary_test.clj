@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [com.thelastcitadel.itinerary :refer :all]))
 
+;; fixtures
 (def foo {:before (fn []
                     (println "foo created")
                     (reify
@@ -22,33 +23,15 @@
                    (.close x))
           :flags #{:once}})
 
+;; tests
 (deftest ^:regression t-foo
   (prn (env))
   (is false))
+;; has to go after because the def in deftest clears the metadata,
+;; very sad
 (depend t-foo :foo foo :bar bar)
 
 (deftest t-bar
   (prn (env))
   (is true))
 (depend t-bar :foo foo :bar bar)
-
-(comment
-
-
-
-  (doseq [x (reverse (rest (deps (dep-graph))))] (prn x))
-
-
-  {[:after #'com.thelastcitadel.itinerary-test/foo #'com.thelastcitadel.itinerary-test/t-foo] #{#'com.thelastcitadel.itinerary-test/t-foo},
-   #'com.thelastcitadel.itinerary-test/t-foo #{[:before #'com.thelastcitadel.itinerary-test/foo #'com.thelastcitadel.itinerary-test/t-foo]},
-   #'com.thelastcitadel.itinerary-test/t-bar #{[:before #'com.thelastcitadel.itinerary-test/foo #'com.thelastcitadel.itinerary-test/t-bar]},
-   [:after #'com.thelastcitadel.itinerary-test/foo #'com.thelastcitadel.itinerary-test/t-bar] #{#'com.thelastcitadel.itinerary-test/t-bar}}
-
-
-  {[:after #'com.thelastcitadel.itinerary-test/foo #'com.thelastcitadel.itinerary-test/t-foo] #{#'com.thelastcitadel.itinerary-test/t-foo},
-   #'com.thelastcitadel.itinerary-test/t-foo #{[:before #'com.thelastcitadel.itinerary-test/foo #'com.thelastcitadel.itinerary-test/t-foo]},
-   [:after #'com.thelastcitadel.itinerary-test/bar] #{#'com.thelastcitadel.itinerary-test/t-bar},
-   #'com.thelastcitadel.itinerary-test/t-bar #{[:before #'com.thelastcitadel.itinerary-test/bar] [:before #'com.thelastcitadel.itinerary-test/foo #'com.thelastcitadel.itinerary-test/t-bar]},
-   [:after #'com.thelastcitadel.itinerary-test/foo #'com.thelastcitadel.itinerary-test/t-bar] #{#'com.thelastcitadel.itinerary-test/t-bar}}
-
-  )
