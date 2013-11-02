@@ -23,10 +23,12 @@
           :flags #{:once}})
 
 (deftest ^:regression t-foo
+  (prn (env))
   (is false))
 (depend t-foo :foo foo :bar bar)
 
 (deftest t-bar
+  (prn (env))
   (is true))
 (depend t-bar :foo foo :bar bar)
 
